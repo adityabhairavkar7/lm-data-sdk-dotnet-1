@@ -4,8 +4,11 @@ infrastructures, offering granular performance monitoring and actionable data an
 entry point in the form of public rest APIs for ingesting metrics into LogicMonitor. For using this application users 
 have to create LMAuth token using access id and key from santaba.
 
-- SDK version: 0.0.5-alpha
-[![CodeQL](https://github.com/adityabhairavkar7/lm-data-sdk-dotnet-1/actions/workflows/codeql-analysis.yml/badge.svg?event=workflow_run)](https://github.com/adityabhairavkar7/lm-data-sdk-dotnet-1/actions/workflows/codeql-analysis.yml)
+- SDK version: 0.0.5-alpha <br>
+
+[![CodeQL](https://github.com/adityabhairavkar7/lm-data-sdk-dotnet-1/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/adityabhairavkar7/lm-data-sdk-dotnet-1/actions/workflows/codeql-analysis.yml)
+
+
 <a name="frameworks-supported"></a>
 
 ## Frameworks supported
