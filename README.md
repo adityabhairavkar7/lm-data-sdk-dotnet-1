@@ -6,7 +6,7 @@ have to create LMAuth token using access id and key from santaba.
 
 - SDK version: 0.0.5-alpha <br>
 
-[![CodeQL](https://github.com/adityabhairavkar7/lm-data-sdk-dotnet-1/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/adityabhairavkar7/lm-data-sdk-dotnet-1/actions/workflows/codeql-analysis.yml)
+[![CodeQL](https://github.com/adityabhairavkar7/lm-data-sdk-dotnet-1/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/adityabhairavkar7/lm-data-sdk-dotnet-1/actions/workflows/codeql-analysis.yml) &nbsp; &nbsp; [![.NET](https://github.com/logicmonitor/lm-data-sdk-dotnet/actions/workflows/dotnet.yml/badge.svg)](https://github.com/logicmonitor/lm-data-sdk-dotnet/actions/workflows/dotnet.yml)
 
 
 <a name="frameworks-supported"></a>
