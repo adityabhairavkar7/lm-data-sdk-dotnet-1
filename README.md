@@ -4,16 +4,17 @@ infrastructures, offering granular performance monitoring and actionable data an
 entry point in the form of public rest APIs for ingesting metrics into LogicMonitor. For using this application users 
 have to create LMAuth token using access id and key from santaba.
 
-- SDK version: 0.0.4-alpha
-
+- SDK version: 0.0.5-alpha
+[![CodeQL](https://github.com/adityabhairavkar7/lm-data-sdk-dotnet-1/actions/workflows/codeql-analysis.yml/badge.svg?event=workflow_run)](https://github.com/adityabhairavkar7/lm-data-sdk-dotnet-1/actions/workflows/codeql-analysis.yml)
 <a name="frameworks-supported"></a>
+
 ## Frameworks supported
 - .NET Core >= 3.1
 
 <a name="dependencies"></a>
 ## Dependencies
 
-- [RestSharp](https://www.nuget.org/packages/RestSharp) - 106.11.7 or later
+- [RestSharp](https://www.nuget.org/packages/RestSharp) - 106.13.0 or later
 - [Json.NET](https://www.nuget.org/packages/Newtonsoft.Json/) - 12.0.3 or later
 - [Microsoft.Extenstion.Logging](https://www.nuget.org/packages/Microsoft.Extensions.Logging/) - 5.0.0 or later
 - [Microsoft.Extenstion.Hosting](https://www.nuget.org/packages/Microsoft.Extensions.Hosting/) - 5.0.0 or later
