@@ -21,15 +21,16 @@ jobs:
         dotnet-version: 3.1.x
     - name: Test
       run: |
-        cd ./LogicMonitor.DataSDK.Tests/
         dotnet test -r testcoverage --collect:"XPlat Code Coverage"  -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
         ls
         cp ./testcoverage/*/coverage.info ./
         pwd
+        cd ./testcoverage
         ls
+        
         
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.github_token }}
-        path-to-lcov: ${{ github.workspace }}/LogicMonitor.DataSDK.Tests/testcoverage/lcov.info
+        path-to-lcov: ${{ github.workspace }}/testcoverage/lcov.info
