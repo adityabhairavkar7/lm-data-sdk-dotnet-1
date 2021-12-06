@@ -22,8 +22,7 @@ jobs:
     - name: Generate coverage report
       run: |
         printenv
-        cd ./LogicMonitor.DataSDK.Tests/
-        dotnet test /p:CollectCoverage=true /p:CoverletOutput=/home/runner/work/lm-data-sdk-dotnet-1/lm-data-sdk-dotnet-1/TestResults /p:CoverletOutputFormat=lcov
+        dotnet test /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
     - name: Publish coverage report to coveralls.io
       uses: coverallsapp/github-action@master
       with:
