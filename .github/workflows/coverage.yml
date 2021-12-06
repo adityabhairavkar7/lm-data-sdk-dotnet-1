@@ -20,9 +20,9 @@ jobs:
       with:
         dotnet-version: 3.1.x
     - name: Test
-      run: dotnet test -c Release --no-build /p:CollectCoverage=true /p:CoverletOutput="coverage/lcov.info" /p:MergeWith="/coverage/lcov.info" /p:CoverletOutputFormat=lcov                                                       
+      run:  dotnet test -r testcoverage --collect:"XPlat Code Coverage"  -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lco
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.github_token }}
-        path-to-lcov: ${{ github.workspace }}/coverage/lcov.info
+        path-to-lcov: ${{ github.workspace }}/testcoverage/*/lcov.info
