@@ -1,3 +1,6 @@
+
+[![Coverage Status](https://coveralls.io/repos/github/adityabhairavkar7/lm-data-sdk-dotnet-1/badge.svg?branch=main)](https://coveralls.io/github/adityabhairavkar7/lm-data-sdk-dotnet-1?branch=main)
+
 # LogicMonitor.DataSDK - the C# library for the LogicMonitor API-Ingest Rest API
 LogicMonitor is a SaaS-based performance monitoring platform that provides full visibility into complex, hybrid 
 infrastructures, offering granular performance monitoring and actionable data and insights. API-Ingest provides the 
