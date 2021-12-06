@@ -24,7 +24,8 @@ jobs:
         cd .LogicMonitor.DataSDK.Tests/
         dotnet test -r testcoverage --collect:"XPlat Code Coverage"  -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
         cp ./testcoverage/*/coverage.info ./
-   - name: Coveralls
+        
+    - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.github_token }}
