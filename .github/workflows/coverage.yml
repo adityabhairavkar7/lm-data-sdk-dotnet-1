@@ -21,7 +21,7 @@ jobs:
         dotnet-version: 3.1.x
     - name: Test
       run: |
-        dotnet test -r ./LogicMonitor.DataSDK.Tests./testcoverage --collect:"XPlat Code Coverage"  -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
+        dotnet test -r ./LogicMonitor.DataSDK.Tests/testcoverage --collect:"XPlat Code Coverage"  -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
         ls
         mv ./LogicMonitor.DataSDK.Tests/testcoverage/*/coverage.info ./LogicMonitor.DataSDK.Tests/testcoverage/
         cd ./LogicMonitor.DataSDK.Tests/testcoverage/
