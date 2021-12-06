@@ -20,7 +20,7 @@ jobs:
       with:
         dotnet-version: 3.1.x
     - name: Test
-      run:  dotnet test -r testcoverage --collect:"XPlat Code Coverage"  -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lco
+      run:  dotnet test -r testcoverage --collect:"XPlat Code Coverage"  -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
