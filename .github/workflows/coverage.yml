@@ -28,4 +28,4 @@ jobs:
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: $/home/runner/work/lm-data-sdk-dotnet-1/lm-data-sdk-dotnet-1/TestResults/coverage.info
+        path-to-lcov: /home/runner/work/lm-data-sdk-dotnet-1/lm-data-sdk-dotnet-1/TestResults/coverage.info
