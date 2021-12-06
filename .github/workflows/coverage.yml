@@ -21,10 +21,11 @@ jobs:
         dotnet-version: 3.1.x
     - name: Generate coverage report
       run: |
+        printenv
         cd ./LogicMonitor.DataSDK.Tests/
-        dotnet test /p:CollectCoverage=true /p:CoverletOutput=RTests/ /p:CoverletOutputFormat=lcov
+        dotnet test /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
     - name: Publish coverage report to coveralls.io
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: ./LogicMonitor.DataSDK.Tests/RTests/coverage.info 
+        path-to-lcov: ./LogicMonitor.DataSDK.Tests/TestResults/coverage.info
