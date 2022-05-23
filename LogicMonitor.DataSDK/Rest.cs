@@ -30,7 +30,7 @@ namespace LogicMonitor.DataSDK
             {
                 client = restClient;
             }
-            client.UserAgent = string.Format("{0}/{1} (.NET version:{2}; os:{3, arch:'NA'})",Setup.PackageID,Setup.PackageVersion, Environment.Version.ToString(), Environment.OSVersion);
+            client.UserAgent = string.Format("{0}/{1} (.NET version:{2}; os:{3}, arch:'NA')",Setup.PackageID,Setup.PackageVersion, Environment.Version.ToString(), Environment.OSVersion);
         }
 
         public void Request(string method, string url, string body, Dictionary<string, string> headers, Dictionary<string, string> queryParams, TimeSpan requestTimeout, Dictionary<string, string> postParams)

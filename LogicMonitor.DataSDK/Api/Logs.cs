@@ -45,43 +45,47 @@ namespace LogicMonitor.DataSDK.Api
             }
             else
             {
-                return SingleRequest(logs);
+                var body= SingleRequest(logs);
+                return send(body);
             }
         }
 
-        public RestResponse SingleRequest(LogsV1 logsV1)
+        public string SingleRequest(LogsV1 logsV1)
         {
-            Dictionary<string, string> Body = new Dictionary<string, string>();
-            Body.Add("message", logsV1.Message);
-            Body.Add("_lm.resourceId", JsonConvert.SerializeObject(logsV1.ResourceId));
-            Body.Add("timestamp", logsV1.Timestamp);
-            Body.Add("metadata", JsonConvert.SerializeObject(logsV1.MetaData));
-
-            var bodyString = JsonConvert.SerializeObject(Body);
-
-
+            var bodyString = CreateLogBody(logsV1);
             List<string> logsV1s = new List<string>();
             logsV1s.Add(bodyString);
-            var body = Newtonsoft.Json.JsonConvert.SerializeObject(logsV1s);
-            body = body.Replace(@"\", "");
-            body = body.Replace("\"{", "{");
-            body = body.Replace("}\"", "}");
-            BatchingCache b = new Logs();
-
-            return b.MakeRequest(path: "/log/ingest", method: "POST", body:body, asyncRequest: false);
+            var body = serializeList(logsV1s);
+            return body;
         }
 
         public override void _doRequest()
         {
-            var list = CreateLogBody();
-            var body1 = Newtonsoft.Json.JsonConvert.SerializeObject(list);
-            body1 = body1.Replace(@"\", "");
-            body1 = body1.Replace("\"{", "{");
-            body1 = body1.Replace("}\"", "}");
-            BatchingCache b = new Logs();
-            RestResponse response= b.MakeRequest(path: "/log/ingest", method: "POST", body: body1);
-        }
+            List<string> logsV1s = new List<string>();
+            foreach (var item in logPayloadCache)
+            {
+              var bodystring = CreateLogBody(item);
+              logsV1s.Add(bodystring);
+            }
+            logPayloadCache.Clear();
+            var body = serializeList(logsV1s);
+            send(body);
 
+        }
+        public string serializeList(List<string> list)
+        {
+          var body = Newtonsoft.Json.JsonConvert.SerializeObject(list);
+          body = body.Replace(@"\", "");
+          body = body.Replace("\"{", "{");
+          body = body.Replace("}\"", "}");
+          return body;
+
+        }
+        public RestResponse send(string body)
+        {
+          BatchingCache b = new Logs();
+          return b.MakeRequest(path: "/log/ingest", method: "POST", body: body);
+        }
         public override void _mergeRequest()
         {
             List<LogsV1> v1s = new List<LogsV1>();
@@ -89,25 +93,16 @@ namespace LogicMonitor.DataSDK.Api
             logPayloadCache.Add((LogsV1)rawRequest.Dequeue());
         }
 
-        private List<string> CreateLogBody()
+        public string CreateLogBody(LogsV1 item)
         {
             string bodyString =null;
-
-            List<string> logsV1s = new List<string>();
-            foreach (var item in logPayloadCache)
-            {
-                Dictionary<string, string> Body = new Dictionary<string, string>();
-                Body.Add("message", item.Message);
-                Body.Add("_lm.resourceId", JsonConvert.SerializeObject(item.ResourceId));
-                Body.Add("timestamp", item.Timestamp);
-                Body.Add("metadata", JsonConvert.SerializeObject(item.MetaData));
-
-                bodyString = JsonConvert.SerializeObject(Body);
-
-                logsV1s.Add(bodyString);
-            }
-            logPayloadCache.Clear();
-            return logsV1s;
+            Dictionary<string, string> Body = new Dictionary<string, string>();
+            Body.Add("message", item.Message);
+            Body.Add("_lm.resourceId", JsonConvert.SerializeObject(item.ResourceId));
+            Body.Add("timestamp", item.Timestamp);
+            Body.Add("metadata", JsonConvert.SerializeObject(item.MetaData));
+            bodyString = JsonConvert.SerializeObject(Body);
+            return bodyString;
         }
 
     }

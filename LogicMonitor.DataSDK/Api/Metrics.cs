@@ -21,6 +21,11 @@ namespace LogicMonitor.DataSDK.Api
     public class Metrics : BatchingCache
     {
         public static readonly object _lock;
+        public static readonly string _ingestPath = "/v2/metric/ingest";
+        public static readonly string _updateResourcePath = "/resource_property/ingest";
+        public static readonly string _updateInsatancePath = "/instance_property/ingest";
+
+
         private ObjectNameValidator objectNameValidator = new ObjectNameValidator();
         //Input input;
         //Input input = new Input();
@@ -58,7 +63,8 @@ namespace LogicMonitor.DataSDK.Api
             }
             else
             {
-                return SingleRequest(input);
+                string body = SingleRequest(input);
+                return send( _ingestPath,body,"POST",input.resource.Create);
             }
         }
 
@@ -68,7 +74,7 @@ namespace LogicMonitor.DataSDK.Api
             if (!MetricsPayloadCache.ContainsKey(singleRequest.resource))
             {
                 MetricsPayloadCache.Add(singleRequest.resource, new Dictionary<DataSource, Dictionary<DataSourceInstance, Dictionary<DataPoint, Dictionary<string, string>>>>());
-                }
+            }
             var _dataS = MetricsPayloadCache[singleRequest.resource];
             if(!_dataS.ContainsKey(singleRequest.dataSource))
             {
@@ -91,7 +97,7 @@ namespace LogicMonitor.DataSDK.Api
                 _value.Add(item.Key, item.Value);
             }
         }
-
+      
         public override void _doRequest()
         {
             var responseList = new List<RestResponse>();
@@ -176,13 +182,16 @@ namespace LogicMonitor.DataSDK.Api
                 if (listOfRestMetricsV1True.Count != 0)
                 {
                     var bodyTrue = Newtonsoft.Json.JsonConvert.SerializeObject(listOfRestMetricsV1True);
-                    response = MakeRequest(path: "/v2/metric/ingest", method: "POST", body: bodyTrue,create:true);
+                    response = send(_ingestPath,"POST",bodyTrue,true);
+                   // MakeRequest(path: "/v2/metric/ingest", method: "POST", body: bodyTrue,create:true);
                     responseList.Add(response);
                 }
                 if (listOfRestMetricsV1False.Count != 0 )
                 {
                     var bodyFalse = Newtonsoft.Json.JsonConvert.SerializeObject(listOfRestMetricsV1True);
-                    response = MakeRequest(path: "/v2/metric/ingest", method: "POST", body: bodyFalse,create:false);
+                    response = send(_ingestPath,"POST",bodyFalse,false);
+
+          //response = MakeRequest(path: "/v2/metric/ingest", method: "POST", body: bodyFalse,create:false);
                     responseList.Add(response);
                 }
             }
@@ -192,7 +201,7 @@ namespace LogicMonitor.DataSDK.Api
                 //BatchingCache.ResponseHandler(response: response);
             }
         }
-        public static RestResponse SingleRequest(MetricsV1 input)
+        public string SingleRequest(MetricsV1 input)
         {
             var dataPoints = new List<RestDataPointV1>();
 
@@ -238,16 +247,26 @@ namespace LogicMonitor.DataSDK.Api
             body = body.Replace(@"\", "");
             body = body.Replace("\"{", "{");
             body = body.Replace("}\"", "}");
-            BatchingCache b = new Metrics();
-            return b.MakeRequest(path: "/v2/metric/ingest", method: "POST", body: body, create: input.resource.Create, asyncRequest: false);
-
+            return body;
+            
         }
 
+    public static RestResponse send(string path,string body,string method ,bool create)
+    {
+      BatchingCache b = new Metrics();
+      return b.MakeRequest(path: path, method: method, body: body, create: create, asyncRequest: false);
 
-        public RestResponse UpdateResourceProperties(Dictionary<string, string> resourceIds, Dictionary<string, string> resourceProperties, bool patch = true)
-        {
-            BatchingCache b = new Metrics();
-            var method = patch ? "PATCH" : "PUT";
+    }
+
+    public RestResponse UpdateResourceProperties(Dictionary<string, string> resourceIds, Dictionary<string, string> resourceProperties, bool patch = true)
+    {
+      var method = patch ? "PATCH" : "PUT";
+      string body = getResourceBody(resourceIds,resourceProperties,patch);
+      return send(_updateResourcePath, method, body, false);
+
+    }
+    public string getResourceBody(Dictionary<string, string> resourceIds, Dictionary<string, string> resourceProperties, bool patch = true)
+    { 
             if (resourceIds != null)
                 objectNameValidator.CheckResourceIdsValidation(resourceIds);
             if (resourceProperties != null)
@@ -261,14 +280,18 @@ namespace LogicMonitor.DataSDK.Api
             body = body.Replace(@"\", "");
             body = body.Replace("\"{", "{");
             body = body.Replace("}\"", "}");
-            return b.MakeRequest(path: "/resource_property/ingest", method: method, body: body, asyncRequest: false);
-        }
+      //return b.MakeRequest(path: "/resource_property/ingest", method: method, body: body, asyncRequest: false);
+            return body;
+    }
 
-        public RestResponse UpdateInstanceProperties(Dictionary<string, string> resourceIds, string dataSourceName, string instanceName, Dictionary<string, string> instanceProperties, bool patch = true)
-        {
-
-            BatchingCache b = new Metrics();
-            var method = patch ? "PATCH" : "PUT";
+    public RestResponse UpdateInstanceProperties(Dictionary<string, string> resourceIds, string dataSourceName, string instanceName, Dictionary<string, string> instanceProperties, bool patch = true)
+    {
+      var method = patch ? "PATCH" : "PUT";
+      string body = getInstanceBody(resourceIds, dataSourceName, instanceName, instanceProperties, patch);
+      return send(_updateInsatancePath, method, body, false);
+    }
+    public string getInstanceBody(Dictionary<string, string> resourceIds, string dataSourceName, string instanceName, Dictionary<string, string> instanceProperties, bool patch = true)
+    { 
             if (resourceIds != null)
                 objectNameValidator.CheckResourceIdsValidation(resourceIds);
             if (dataSourceName != null)
@@ -295,7 +318,9 @@ namespace LogicMonitor.DataSDK.Api
             body = body.Replace("}\"", "}");
             body = body.Replace("\"instances\":[{", "");
             body = body.Replace("}]", "");
-            return b.MakeRequest(path: "/instance_property/ingest", method: method, body: body, asyncRequest: false);
+            return body;
+      //return b.MakeRequest(path: "
+      //", method: method, body: body, asyncRequest: false);
         }
         public string ValidField(DataSource dataSource, DataSourceInstance dataSourceInstance)
         {
