@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.810.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogicMonitor.DataSDK.Tests", "LogicMonitor.DataSDK.Tests.csproj", "{49E4C666-2B0A-4C20-9FFA-5C2D9184B95B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{49E4C666-2B0A-4C20-9FFA-5C2D9184B95B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49E4C666-2B0A-4C20-9FFA-5C2D9184B95B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49E4C666-2B0A-4C20-9FFA-5C2D9184B95B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49E4C666-2B0A-4C20-9FFA-5C2D9184B95B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FBBA1B9E-F7DD-4D87-8F61-E1854DEE0EE6}
+	EndGlobalSection
+EndGlobal

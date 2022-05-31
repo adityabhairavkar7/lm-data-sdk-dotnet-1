@@ -1,0 +1,29 @@
+﻿<Properties StartupConfiguration="{49E4C666-2B0A-4C20-9FFA-5C2D9184B95B}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="internal/TestBatchingCache.cs">
+    <Files>
+      <File FileName="internal/TestBatchingCache.cs" Line="31" Column="36" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="LogicMonitor.DataSDK.Tests" expanded="True">
+            <Node name="LogicMonitor.DataSDK.Tests" expanded="True">
+              <Node name="Api" expanded="True" />
+              <Node name="internal" expanded="True">
+                <Node name="TestBatchingCache.cs" selected="True" />
+              </Node>
+              <Node name="Model" expanded="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.LogicMonitor.DataSDK.Tests PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
