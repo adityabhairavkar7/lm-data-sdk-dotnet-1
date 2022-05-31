@@ -1,6 +1,3 @@
-
-[![Coverage Status](https://coveralls.io/repos/github/adityabhairavkar7/lm-data-sdk-dotnet-1/badge.svg?branch=main)](https://coveralls.io/github/adityabhairavkar7/lm-data-sdk-dotnet-1?branch=main)
-
 # LogicMonitor.DataSDK - the C# library for the LogicMonitor API-Ingest Rest API
 
 [![CodeQL](https://github.com/logicmonitor/lm-data-sdk-dotnet/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/logicmonitor/lm-data-sdk-dotnet/actions/workflows/codeql-analysis.yml) [![.NET](https://github.com/logicmonitor/lm-data-sdk-dotnet/actions/workflows/dotnet.yml/badge.svg)](https://github.com/logicmonitor/lm-data-sdk-dotnet/actions/workflows/dotnet.yml)
