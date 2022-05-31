@@ -2,19 +2,19 @@
     "metadata": [{
         "src": [{
             "files": [
-                "../LogicMonitor.DataSDK/**.csproj"
-            ]
+                "LogicMonitor.DataSDK/**.csproj"
+            ],
+            "src":".."
         }],
         "filter": "filter/filter.yaml",
         "dest": "api",
-        "disableGitFeatures": true,
+        "disableGitFeatures": false,
         "disableDefaultFilter": false
     }],
     "build": {
         "content": [{
                 "files": [
-                    "api/**.yml",
-                    "api/index.md"
+                    "api/**.yml"
                 ]
             },
             {
@@ -45,7 +45,11 @@
         "dest": "../docs",
         "globalMetadataFiles": [],
         "fileMetadataFiles": [],
-        "template": ["default", "material/material"],
+        
+        "template": [
+            "default",
+            "templates/material"
+        ],
         "postProcessors": [],
         "markdownEngineName": "markdig",
         "noLangKeyword": false,

@@ -4,7 +4,7 @@ infrastructures, offering granular performance monitoring and actionable data an
 entry point in the form of public rest APIs for ingesting metrics into LogicMonitor. For using this application users 
 have to create LMAuth token using access id and key from santaba.
 
-- SDK version: 0.0.4-alpha
+- SDK version: 0.0.7-alpha
 
 <a name="frameworks-supported"></a>
 ## Frameworks supported
@@ -13,7 +13,7 @@ have to create LMAuth token using access id and key from santaba.
 <a name="dependencies"></a>
 ## Dependencies
 
-- [RestSharp](https://www.nuget.org/packages/RestSharp) - 106.11.7 or later
+- [RestSharp](https://www.nuget.org/packages/RestSharp) - 106.13.0 or later
 - [Json.NET](https://www.nuget.org/packages/Newtonsoft.Json/) - 12.0.3 or later
 - [Microsoft.Extenstion.Logging](https://www.nuget.org/packages/Newtonsoft.Json/) - 12.0.3 or later
 - [Microsoft.Extenstion.Hosting](https://www.nuget.org/packages/Newtonsoft.Json/) - 12.0.3 or later
@@ -24,19 +24,13 @@ NOTE: RestSharp for .Net Core creates a new socket for each api call, which can 
 <a name="Configration"></a>
 ## Configration
 
-SDK must be configured with LogicMonitor.DataSDK Configuration. An API LmAccessId, LmAccessKey and Type are required.
-Authenticate class is to used set the values and its object will be passed to configration class along with account(company) name.
+SDK must be configured with LogicMonitor.DataSDK Configuration class. 
+While using LMv1 authentication set AccessID and AccessKey properties, In Case of BearerToken Authentication set Bearer Token property.Company's name or Account name <b> must </b> be passed to Company property.
 
-```csharp
-Authenticate authenticate = new Authenticate();
-authenticate.Id = Environment.GetEnvironmentVariable("LmId");
-authenticate.Key = Environment.GetEnvironmentVariable("LmKey");
-authenticate.Type = Environment.GetEnvironmentVariable("LmType");
-Configuration configuration = new Configuration(company: Environment.GetEnvironmentVariable("LmCompany"), authentication: authenticate);
-```
 <a name="Model"></a>
 ## Model
 - Resource
+
 ```csharp
 Resource resource = new Resource(Ids,Name,Description,Properties,Create);
 ```
@@ -102,6 +96,12 @@ Description(string): Datapoint description. Only considered when creating a new 
 Type(string): Metric type as a number in string format. Allowed options are “guage” (default) and “counter”. Only considered 
 when creating a new datapoint.
 
+- Value
+```csharp
+Dictionary<string,string> value = new Dictionary<string,string>();
+```
+Value is a dictionary which stores the time of data emittion(in epoch) as Key of Dictionary and Metrics data as Value of Dictionary.
+
 <a name="getting-started"></a>
 ## Getting Started
 
@@ -120,26 +120,29 @@ namespace IncludeDll
             
             string resourceName = "SampleDevice.net";
             Dictionary<string, string> resourceIds = new Dictionary<string, string>();
-            resourceIds.Add("system.displayname","SampleDevice11");
-            resourceIds.Add("some.custom.property", "value11");
+            resourceIds.Add("system.displayname","SampleDevice1");
+            resourceIds.Add("some.custom.property", "value");
             string dataSourceName = "MBM";
             string dataSourceGroup = "123";
             string saname = "Instance1";
             string datapointname = "datapoint1";
-            Dictionary<string, string> value = new Dictionary<string, string>();
-            value.Add("1627542978", "4212");
 
             MyResponse responseInterface = new MyResponse();
+
+            ApiClient apiClient = new ApiClient(configuration);
+
+            Metrics metrics = new Metrics(batch:false,interval:0,responseInterface, apiClient);
+
             Resource resource = new Resource(name: resourceName,ids:resourceIds);
             DataSource dataSource = new DataSource( Name:dataSourceName, Group: dataSourceGroup);
             DataSourceInstance dataSourceInstance = new DataSourceInstance(name: saname);
             DataPoint dataPoint = new DataPoint(name:datapointname);
-
-            ApiClients apiClients = new ApiClients(configuration);
-
-
-            Metrics metrics1 = new Metrics(batchs:false,intervals:0,responseInterface, apiClients);
-            metrics1.SendMetrics(resource: resource, dataSource: dataSource, dataSourceInstance: dataSourceInstance, dataPoint: dataPoint, values: value);
+            Dictionary<string, string> value = new Dictionary<string, string>();
+            
+            string epochTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
+            string metricData = "4212";
+            value.Add(epochTime, metricData);
+            metrics.SendMetrics(resource: resource, dataSource: dataSource, dataSourceInstance: dataSourceInstance, dataPoint: dataPoint, values: value);
 
             
         }

@@ -2,12 +2,19 @@
 [![Coverage Status](https://coveralls.io/repos/github/adityabhairavkar7/lm-data-sdk-dotnet-1/badge.svg?branch=main)](https://coveralls.io/github/adityabhairavkar7/lm-data-sdk-dotnet-1?branch=main)
 
 # LogicMonitor.DataSDK - the C# library for the LogicMonitor API-Ingest Rest API
+
+[![CodeQL](https://github.com/logicmonitor/lm-data-sdk-dotnet/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/logicmonitor/lm-data-sdk-dotnet/actions/workflows/codeql-analysis.yml) [![.NET](https://github.com/logicmonitor/lm-data-sdk-dotnet/actions/workflows/dotnet.yml/badge.svg)](https://github.com/logicmonitor/lm-data-sdk-dotnet/actions/workflows/dotnet.yml)
+
 LogicMonitor is a SaaS-based performance monitoring platform that provides full visibility into complex, hybrid 
 infrastructures, offering granular performance monitoring and actionable data and insights. API-Ingest provides the 
 entry point in the form of public rest APIs for ingesting metrics into LogicMonitor. For using this application users 
-have to create LMAuth token using access id and key from santaba.
+have to create either LMv1 authentication token or Bearer token from LogicMonitor platform (a.k.a santaba).
 
-- SDK version: 0.0.4-alpha
+- SDK version: 0.0.7-alpha
+
+:point_right: [API reference docs](https://logicmonitor.github.io/lm-data-sdk-dotnet/) 
+
+:point_right: [NuGet package](https://www.nuget.org/packages/Logicmonitor.DataSDK) 
 
 <a name="frameworks-supported"></a>
 ## Frameworks supported
@@ -16,62 +23,52 @@ have to create LMAuth token using access id and key from santaba.
 <a name="dependencies"></a>
 ## Dependencies
 
-- [RestSharp](https://www.nuget.org/packages/RestSharp) - 106.11.7 or later
+- [RestSharp](https://www.nuget.org/packages/RestSharp) - 106.13.0 or later
 - [Json.NET](https://www.nuget.org/packages/Newtonsoft.Json/) - 12.0.3 or later
 - [Microsoft.Extenstion.Logging](https://www.nuget.org/packages/Microsoft.Extensions.Logging/) - 5.0.0 or later
 - [Microsoft.Extenstion.Hosting](https://www.nuget.org/packages/Microsoft.Extensions.Hosting/) - 5.0.0 or later
 
+<a name = "Metrics Ingestion Example"></a>
+## Metrics Ingestion Example.
 
+SDK must be configured with LogicMonitor.DataSDK Configuration class. 
+While using LMv1 authentication set AccessID and AccessKey properties, In Case of BearerToken Authentication set Bearer Token property. Company's name or Account name <b>must</b> be passed to Company property. All properties can be set using environment variable.
 
-<a name = "Configration"></a>
-## Configration
-SDK must be configured with LogicMonitor.DataSDK Configuration. An API LmAccessId, LmAccessKey and Type are required.
-Authenticate class is to used set the values and its object will be passed to configration class along with account(company) name.
+For metrics ingestion user must create a object of Resource, DataSource, DataSourceInstance and DataPoint using LogicMonitor.DataSDK.Model namespace,
+also dictonary should be created in  which 'Key' hold the Time(in epoch) for which data is being emitted and 'Value' will the the value of datapoint.
+
 
 ```csharp
-Authenticate authenticate = new Authenticate();
-authenticate.Id = Environment.GetEnvironmentVariable("LmId");
-authenticate.Key = Environment.GetEnvironmentVariable("LmKey");
-authenticate.Type = Environment.GetEnvironmentVariable("LmType");
-Configuration configuration = new Configuration(company: Environment.GetEnvironmentVariable("LmCompany"), authentication: authenticate);
-```
+//Pass autheticate variable as Environment variable.
+ApiClient apiClient = new ApiClient();
 
-<a name = "Batching Metrics & Log Ingestion"></a>
-## Batching Metrics & Log Ingestion.
-
-When their is requirement that data is not to be ingested immediately after generation, user can ingest data in bulk i.e multiple metrics and log is to be ingested in single request.
-
-To enable batching, batchs is to be set to 'True' along with proper interval(in seconds) which determine the time between the variable.
-For the set interval, SDK waits for all the data to generate and ingest all the data after completion of interval. 
-
-NOTE:Make sure data should not be older than 10 mins.
-```csharp
-ApiClients apiClients = new ApiClients(configuration);
+Metrics metrics = new Metrics(batch: false, interval: 0, responseInterface, apiClient);
 
 Resource resource = new Resource(name: resourceName, ids: resourceIds, create: true);
-DataSource dataSource = new DataSource(Name: dataSourceName, Group: dataSourceGroupName);
-DataSourceInstance dataSourceInstance = new DataSourceInstance(name: dataSouceInstanceName);
-DataPoint open = new DataPoint(name: "High");
-Dictionary<string, string> highValue = new Dictionary<string, string>();
+DataSource dataSource = new DataSource(Name: dataSourceName, Group: dataSourceGroup);
+DataSourceInstance dataSourceInstance = new DataSourceInstance(name: InstanceName);
+DataPoint dataPoint = new DataPoint(name: CpuUsage);
+Dictionary<string, string> CpuUsageValue = new Dictionary<string, string>();
     
     
-Metrics metrics = new Metrics(batchs: true, intervals: 100, responseInterface, apiClients);
-highValue.Add(DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), item.SelectToken("high").ToString());
-    
-metrics.SendMetrics(resource: resource, dataSource: dataSource, dataSourceInstance: dataSourceInstance, dataPoint: open, values: openValue);
-
-Logs logs = new Logs(batchs: true, intervals: 100, responseCallbacks: responseInterface, apiClients: apiClients);
-logs.SendLogs(message: msg, resource: resource);
+CpuUsageValue.Add(epochTime, metricData);
+metrics.SendMetrics(resource: resource, dataSource: dataSource, dataSourceInstance: dataSourceInstance, dataPoint: dataPoint, values: CpuUsageValue);
 ```
-
-Then Run the program as:
+To Pass autheticate variable as Environment variable use the following command.:
+While Using LMv1 Authentication:
 ```csharp
-export id=<LM_AccessID>  api_key=<LM_AccessKey> type=<'LMv1'/'Bearer'> Lm_company=<LM_AccountName>
-dotnet run
+export ACCOUNT_NAME=<YourAccountName> API_ACCESS_ID=<YourAccessID> API_ACCESS_KEY=<'YourAccessKey'>
 ```
+
+While Using Bearer Authentication:
+```csharp
+export ACCOUNT_NAME=<YourAccountName> API_BEARER_TOKEN=<YourBearerToken>
+```
+Read below for understanding more about Models in SDK.
 
 <a name="Model"></a>
 ## Model
+
 - Resource
 
 ```csharp
@@ -143,6 +140,12 @@ information on datapoint value aggregation intervals.
 
 <b>Type(string):</b> Metric type as a number in string format. Allowed options are “guage” (default) and “counter”. Only considered 
 when creating a new datapoint.
+
+- Value
+```csharp
+Dictionary<string,string> value = new Dictionary<string,string>();
+```
+Value is a dictionary which stores the time of data emittion(in epoch) as Key of dictionary and Metric Data as Value of dictionary.
 
 <a name="documentation-for-api-endpoints"></a>
 ## Documentation for API Endpoints

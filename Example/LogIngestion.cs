@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright, 2021, LogicMonitor, Inc.
+ * Copyright, 2022, LogicMonitor, Inc.
  * This Source Code Form is subject to the terms of the 
  * Mozilla Public License, v. 2.0. If a copy of the MPL 
  * was not distributed with this file, You can obtain 
@@ -15,12 +15,11 @@ using System.Diagnostics;
 using System.Net;
 using RestSharp;
 
-namespace Demo
+namespace Example
 {
     class Program
     {
         static void Main(string[] args)
-
         {
             var resourceName = Dns.GetHostName();
             var temp = Process.GetCurrentProcess();
@@ -31,21 +30,18 @@ namespace Demo
             var cpuUsedMs = (endCpuUsage - startCpuUsage).TotalMilliseconds;
             var totalMsPassed = (endTime - startTime).TotalMilliseconds;
 
-            Authenticate authenticate = new Authenticate();
-            authenticate.Id = Environment.GetEnvironmentVariable("id");
-            authenticate.Key = Environment.GetEnvironmentVariable("api_key");
-            authenticate.Type = Environment.GetEnvironmentVariable("LMv1");
-            Configuration configuration = new Configuration(company: Environment.GetEnvironmentVariable("company"), authentication: authenticate);
-
-            ApiClients apiClients = new ApiClients(configuration);
-            
             Dictionary<string, string> resourceIds = new Dictionary<string, string>();
             resourceIds.Add("system.displayname", resourceName.ToString());
             MyResponse responseInterface = new MyResponse();
+
+            //Pass the Authenticate Variables as Enviroment variable.
+            ApiClient apiClient = new ApiClient();
+            Logs logs = new Logs(batch: false, interval: 0, responseCallback: responseInterface, apiClient: apiClient);
+
             Resource resource = new Resource(name: resourceName.ToString(), ids: resourceIds, create: true);
 
-            Logs logs = new Logs(batchs: false, intervals: 0, responseCallbacks: responseInterface, apiClients: apiClients);
             string msg =  "Program function  has CPU Usage " + (cpuUsedMs / (Environment.ProcessorCount * totalMsPassed)).ToString()+" Milliseconds";
+            
             logs.SendLogs(message: msg, resource: resource);
 
         }

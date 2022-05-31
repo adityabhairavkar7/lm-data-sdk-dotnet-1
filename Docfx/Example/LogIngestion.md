@@ -4,7 +4,7 @@ infrastructures, offering granular performance monitoring and actionable data an
 entry point in the form of public rest APIs for ingesting metrics into LogicMonitor. For using this application users 
 have to create LMAuth token using access id and key from santaba.
 
-- SDK version: 0.0.4-alpha
+- SDK version: 0.0.7-alpha
 
 <a name="frameworks-supported"></a>
 ## Frameworks supported
@@ -13,39 +13,28 @@ have to create LMAuth token using access id and key from santaba.
 <a name="dependencies"></a>
 ## Dependencies
 
-- [RestSharp](https://www.nuget.org/packages/RestSharp) - 106.11.7 or later
+- [RestSharp](https://www.nuget.org/packages/RestSharp) - 106.13.0 or later
 - [Json.NET](https://www.nuget.org/packages/Newtonsoft.Json/) - 12.0.3 or later
 - [Microsoft.Extenstion.Logging](https://www.nuget.org/packages/Microsoft.Extensions.Logging/) - 5.0.0 or later
 - [Microsoft.Extenstion.Hosting](https://www.nuget.org/packages/Microsoft.Extensions.Hosting/) - 5.0.0 or later
 
-
-
-<a name = "Configration"></a>
-## Configration
-SDK must be configured with LogicMonitor.DataSDK Configuration. An API LmAccessId, LmAccessKey and Type are required.
-Authenticate class is to used set the values and its object will be passed to configration class along with account(company) name.
-
-```csharp
-Authenticate authenticate = new Authenticate();
-authenticate.Id = Environment.GetEnvironmentVariable("LmId");
-authenticate.Key = Environment.GetEnvironmentVariable("LmKey");
-authenticate.Type = Environment.GetEnvironmentVariable("LmType");
-Configuration configuration = new Configuration(company: Environment.GetEnvironmentVariable("LmCompany"), authentication: authenticate);
-```
-
 <a name = "Single Log Ingestion"></a>
 ## Single Log Ingestion.
 
-For Log ingestion, log message has to be passed along the resource object to idetify the resource.
+SDK must be configured with LogicMonitor.DataSDK Configuration class. 
+While using LMv1 authentication set AccessID and AccessKey properties, In Case of BearerToken Authentication set Bearer Token property.Company's name or Account name <b>must</b> be passed to Company property.All properties can be set using environment variable.
+
+For Log ingestion, log message has to be passed along the resource object to idetify the resource.Create a resource object using LogicMonitor.DataSDK.Models namespace.
 
 ```csharp
-ApiClients apiClients = new ApiClients(configuration);
+ApiClient apiClient = new ApiClient();
 
-Resource resource = new Resource(name: resourceName, ids: resourceIds);
-string logMessage = " This is my logging message";
+Logs logs = new Logs(batch: false, interval: 0, responseCallback: responseInterface, apiClient: apiClient);
 
-Logs logs = new Logs(batchs: false, intervals: 0, apiClients: apiClients);s
-logs.SendLogs(message: logMessage, resource: resource);
+Resource resource = new Resource(name: resourceName.ToString(), ids: resourceIds, create: true);
+string msg =  "Program function  has CPU Usage " + (cpuUsedMs / (Environment.ProcessorCount * totalMsPassed)).ToString()+" Milliseconds";
+
+logs.SendLogs(message: msg, resource: resource);
 ```
 
 <a name="Model"></a>

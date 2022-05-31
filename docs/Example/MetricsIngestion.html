@@ -10,17 +10,17 @@
     <meta name="title" content="LogicMonitor.DataSDK - the C# library for the LogicMonitor API-Ingest Rest API ">
     <meta name="generator" content="docfx 2.58.4.0">
     
-    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
     <link rel="stylesheet" href="../styles/docfx.css">
     <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"> 
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
     
     
     
-  </head>
-  <body data-spy="scroll" data-target="#affix" data-offset="120">
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
     <div id="wrapper">
       <header>
         
@@ -33,9 +33,8 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              
               <a class="navbar-brand" href="../index.html">
-                <img id="logo" class="svg" src="../logo.svg" alt="">
+                <img id="logo" src="../images/favicon.ico" height="46" width="46" alt="">
               </a>
             </div>
             <div class="collapse navbar-collapse" id="navbar">
@@ -46,8 +45,7 @@
               </form>
             </div>
           </div>
-        </nav>
-        
+        </nav>        
         <div class="subnav navbar navbar-default">
           <div class="container hide-when-search" id="breadcrumb">
             <ul class="breadcrumb">
@@ -74,7 +72,7 @@ infrastructures, offering granular performance monitoring and actionable data an
 entry point in the form of public rest APIs for ingesting metrics into LogicMonitor. For using this application users
 have to create LMAuth token using access id and key from santaba.</p>
 <ul>
-<li>SDK version: 0.0.4-alpha</li>
+<li>SDK version: 0.0.7-alpha</li>
 </ul>
 <p><a name="frameworks-supported"></a></p>
 <h2 id="frameworks-supported">Frameworks supported</h2>
@@ -84,44 +82,33 @@ have to create LMAuth token using access id and key from santaba.</p>
 <p><a name="dependencies"></a></p>
 <h2 id="dependencies">Dependencies</h2>
 <ul>
-<li><a href="https://www.nuget.org/packages/RestSharp">RestSharp</a> - 106.11.7 or later</li>
+<li><a href="https://www.nuget.org/packages/RestSharp">RestSharp</a> - 106.13.0 or later</li>
 <li><a href="https://www.nuget.org/packages/Newtonsoft.Json/">Json.NET</a> - 12.0.3 or later</li>
 <li><a href="https://www.nuget.org/packages/Microsoft.Extensions.Logging/">Microsoft.Extenstion.Logging</a> - 5.0.0 or later</li>
 <li><a href="https://www.nuget.org/packages/Microsoft.Extensions.Hosting/">Microsoft.Extenstion.Hosting</a> - 5.0.0 or later</li>
 </ul>
-<p><a name="Configration"></a></p>
-<h2 id="configration">Configration</h2>
-<p>SDK must be configured with LogicMonitor.DataSDK Configuration. An API LmAccessId, LmAccessKey and Type are required.
-Authenticate class is to used set the values and its object will be passed to configration class along with account(company) name.</p>
-<pre><code class="lang-csharp">Authenticate authenticate = new Authenticate();
-authenticate.Id = Environment.GetEnvironmentVariable(&quot;LmId&quot;);
-authenticate.Key = Environment.GetEnvironmentVariable(&quot;LmKey&quot;);
-authenticate.Type = Environment.GetEnvironmentVariable(&quot;LmType&quot;);
-Configuration configuration = new Configuration(company: Environment.GetEnvironmentVariable(&quot;LmCompany&quot;), authentication: authenticate);
-</code></pre>
-<p><a name="Batching Metrics & Log Ingestion"></a></p>
-<h2 id="batching-metrics--log-ingestion">Batching Metrics &amp; Log Ingestion.</h2>
-<p>When their is requirement that data is not to be ingested immediately after generation, user can ingest data in bulk i.e multiple metrics and log is to be ingested in single request.</p>
-<p>To enable batching, batchs is to be set to 'True' along with proper interval(in seconds) which determine the time between the variable.
-For the set interval, SDK waits for all the data to generate and ingest all the data after completion of interval.</p>
-<p>NOTE:Make sure data should not be older than 10 mins.</p>
-<pre><code class="lang-csharp">ApiClients apiClients = new ApiClients(configuration);
+<p><a name="Metrics Ingestion Example"></a></p>
+<h2 id="metrics-ingestion-example">Metrics Ingestion Example.</h2>
+<p>SDK must be configured with LogicMonitor.DataSDK Configuration class.
+While using LMv1 authentication set AccessID and AccessKey properties, In Case of BearerToken Authentication set Bearer Token property.Company's name or Account name <b>must</b> be passed to Company property.All properties can be set using environment variable.</p>
+<p>For metrics ingestion user must create a object of Resource, DataSource, DataSourceInstance and DataPoint using LogicMonitor.DataSDK.Model namespace,
+also dictonary should be created in  which 'Key' hold the Time(in epoch) for which data is being emitted and 'Value' will the the value of datapoint.</p>
+<pre><code class="lang-csharp">//Pass autheticate variable as Environment variable.
+ApiClient apiClient = new ApiClient();
+
+Metrics metrics = new Metrics(batch: false, interval: 0, responseInterface, apiClient);
 
 Resource resource = new Resource(name: resourceName, ids: resourceIds, create: true);
-DataSource dataSource = new DataSource(Name: dataSourceName, Group: dataSourceGroupName);
-DataSourceInstance dataSourceInstance = new DataSourceInstance(name: dataSouceInstanceName);
-DataPoint open = new DataPoint(name: &quot;High&quot;);
-Dictionary&lt;string, string&gt; highValue = new Dictionary&lt;string, string&gt;();
+DataSource dataSource = new DataSource(Name: dataSourceName, Group: dataSourceGroup);
+DataSourceInstance dataSourceInstance = new DataSourceInstance(name: InstanceName);
+DataPoint dataPoint = new DataPoint(name: CpuUsage);
+Dictionary&lt;string, string&gt; CpuUsageValue = new Dictionary&lt;string, string&gt;();
     
     
-Metrics metrics = new Metrics(batchs: true, intervals: 100, responseInterface, apiClients);
-highValue.Add(DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), item.SelectToken(&quot;high&quot;).ToString());
-    
-metrics.SendMetrics(resource: resource, dataSource: dataSource, dataSourceInstance: dataSourceInstance, dataPoint: open, values: openValue);
-
-Logs logs = new Logs(batchs: true, intervals: 100, responseCallbacks: responseInterface, apiClients: apiClients);
-logs.SendLogs(message: msg, resource: resource);
+CpuUsageValue.Add(epochTime, metricData);
+metrics.SendMetrics(resource: resource, dataSource: dataSource, dataSourceInstance: dataSourceInstance, dataPoint: dataPoint, values: CpuUsageValue);
 </code></pre>
+<p>Read below for understanding more about Models in SDK.</p>
 <p><a name="Model"></a></p>
 <h2 id="model">Model</h2>
 <ul>
@@ -176,6 +163,12 @@ information on datapoint value aggregation intervals.</p>
 <p><b>Description(string):</b> Datapoint description. Only considered when creating a new datapoint.</p>
 <p><b>Type(string):</b> Metric type as a number in string format. Allowed options are “guage” (default) and “counter”. Only considered
 when creating a new datapoint.</p>
+<ul>
+<li>Value</li>
+</ul>
+<pre><code class="lang-csharp">Dictionary&lt;string,string&gt; value = new Dictionary&lt;string,string&gt;();
+</code></pre>
+<p>Value is a dictionary which stores the time of data emittion(in epoch) as Key of dictionary and Metric Data as Value of dictionary.</p>
 <p><a name="documentation-for-api-endpoints"></a></p>
 <h2 id="documentation-for-api-endpoints">Documentation for API Endpoints</h2>
 <p>All URIs are relative to <em><a href="https://AccountName.logicmonitor.com/rest">https://AccountName.logicmonitor.com/rest</a></em></p>
@@ -205,11 +198,10 @@ when creating a new datapoint.</p>
               <a href="#top">Back to top</a>
             </span>
             
-            <span>Generated by <strong>DocFX</strong></span>
+            <span>Copyright © 2008-2022 Logicmonitor Inc.<br>Generated by <strong>DocFX</strong></span>
           </div>
         </div>
-      </footer>
-    </div>
+      </footer>    </div>
     
     <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
     <script type="text/javascript" src="../styles/docfx.js"></script>
